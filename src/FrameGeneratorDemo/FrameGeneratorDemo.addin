@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Inventor add-in manifest. Inventor scans its Addins folders for *.addin files
+  on startup and CoCreateInstance's the class named by <ClassId> (which must
+  match the [Guid] on StandardAddInServer). Deployed inside an ApplicationPlugins
+  bundle (see PackageContents.xml at the repo root); Inventor discovers the bundle
+  automatically — no regasm. <Assembly> is the managed DLL, resolved relative to
+  this manifest's folder (the comhost ships alongside and activates the .NET 8
+  class). register.ps1 assembles the bundle.
+-->
+<Addin Type="Standard">
+  <!-- Must equal the [Guid("...")] attribute on StandardAddInServer. -->
+  <ClassId>{6F9A1C2E-7B3D-4E5A-8C1F-2A3B4C5D6E7F}</ClassId>
+  <ClientId>{6F9A1C2E-7B3D-4E5A-8C1F-2A3B4C5D6E7F}</ClientId>
+  <DisplayName>Frame Generator Demo</DisplayName>
+  <Description>Companion add-in for the "Inside Frame Generator" blog series: places an endplate on a Frame Generator beam and re-resolves its constraint when the beam profile changes.</Description>
+  <Assembly>FrameGeneratorDemo.dll</Assembly>
+  <LoadOnStartUp>1</LoadOnStartUp>
+  <UserUnloadable>1</UserUnloadable>
+  <Hidden>0</Hidden>
+  <SupportedSoftwareVersionGreaterThan>29..</SupportedSoftwareVersionGreaterThan>
+</Addin>

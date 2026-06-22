@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ApplicationPlugins bundle manifest. Inventor scans %PROGRAMDATA% and %APPDATA%
+  \Autodesk\ApplicationPlugins\*\ for PackageContents.xml on startup and loads the
+  .addin named by ModuleName for the running Inventor series — no COM registration
+  needed. Inventor 2026 = release series Ir30 (2024=Ir28, 2025=Ir29, 2027=Ir31).
+  register.ps1 lays this out as FrameGeneratorDemo.bundle.
+-->
+<ApplicationPackage SchemaVersion="1.0" AutodeskProduct="Inventor"
+    Name="Frame Generator Demo"
+    Description="Companion add-in for the Inside Frame Generator blog series"
+    AppVersion="1.0.0" FriendlyVersion="1.0.0"
+    ProductType="Application" SupportedLocales="Enu"
+    AppNameSpace="appstore.exchange.autodesk.com"
+    Author="Bas Automation Services"
+    ProductCode="{A7C3E1D2-4B5F-4A6C-9D8E-1F2A3B4C5D6E}"
+    UpgradeCode="{B8D4F2E3-5C6A-4B7D-8E9F-2A3B4C5D6E7F}">
+  <CompanyDetails Name="Bas Automation Services"
+      Url="http://www.basautomationservices.com"
+      Email="support@basautomationservices.com" />
+  <RuntimeRequirements />
+  <Components Description="Frame Generator Demo (Inventor 2026)">
+    <RuntimeRequirements OS="Win64" Platform="Inventor" SeriesMin="Ir30" SeriesMax="Ir30" />
+    <ComponentEntry AppName="Frame Generator Demo" Version="1.0.0"
+        ModuleName="./Contents/2026/FrameGeneratorDemo.addin"
+        AppDescription="Frame Generator Demo" />
+  </Components>
+</ApplicationPackage>

@@ -1,0 +1,67 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    Standalone Inventor 2026 add-in. Inventor 2026 hosts .NET 8, so the add-in
+    targets net8.0-windows and is loaded by .NET COM hosting: EnableComHosting
+    emits FrameGeneratorDemo.comhost.dll, which register.ps1 registers with
+    regsvr32 so Inventor can activate the add-in class by its CLSID. No external
+    NuGet packages — the Inventor interop is referenced straight from the install.
+    (Targeting .NET Framework here is what made debugging fail: a net48 add-in
+    can't load into Inventor 2026's .NET 8 host.)
+  -->
+  <PropertyGroup>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <Nullable>disable</Nullable>
+    <UseWindowsForms>true</UseWindowsForms>
+    <AssemblyName>FrameGeneratorDemo</AssemblyName>
+    <RootNamespace>FrameGeneratorDemo</RootNamespace>
+    <!-- .NET COM hosting: emit the comhost so Inventor can CoCreateInstance the add-in. -->
+    <EnableComHosting>true</EnableComHosting>
+    <!-- Inventor is 64-bit; match it so the debugger and host bitness line up. -->
+    <PlatformTarget>x64</PlatformTarget>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="Autodesk.Inventor.Interop">
+      <!-- ProgramW6432 = native "C:\Program Files" even under 32-bit MSBuild. Adjust
+           if Inventor is installed elsewhere. -->
+      <HintPath>$(ProgramW6432)\Autodesk\Inventor 2026\Bin\Public Assemblies\Autodesk.Inventor.Interop.dll</HintPath>
+      <EmbedInteropTypes>False</EmbedInteropTypes>
+      <Private>False</Private>
+    </Reference>
+  </ItemGroup>
+
+  <!-- Ship the add-in manifest next to the build output (it lands in the bundle). -->
+  <ItemGroup>
+    <None Update="FrameGeneratorDemo.addin">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <!--
+    Post-build deploy: lay out the ApplicationPlugins bundle so Inventor picks up
+    the add-in with no separate step (the same as the other BAS plugins'
+    post-build copy to %ProgramData%\Autodesk\ApplicationPlugins). Writing there
+    may need an elevated build. WarnAndContinue so a rebuild while Inventor is open
+    (DLL locked) warns instead of failing the build — close Inventor and rebuild
+    to refresh.
+  -->
+  <Target Name="DeployToApplicationPlugins" AfterTargets="Build">
+    <PropertyGroup>
+      <FgBundleDir>$(ProgramData)\Autodesk\ApplicationPlugins\FrameGeneratorDemo.bundle</FgBundleDir>
+    </PropertyGroup>
+    <ItemGroup>
+      <FgBuildOutput Include="$(TargetDir)**\*" />
+    </ItemGroup>
+    <Copy SourceFiles="$(MSBuildProjectDirectory)\..\..\PackageContents.xml"
+          DestinationFolder="$(FgBundleDir)"
+          Retries="0" ContinueOnError="WarnAndContinue" />
+    <Copy SourceFiles="@(FgBuildOutput)"
+          DestinationFiles="@(FgBuildOutput->'$(FgBundleDir)\Contents\2026\%(RecursiveDir)%(Filename)%(Extension)')"
+          Retries="0" ContinueOnError="WarnAndContinue" />
+    <Message Importance="high" Text="FrameGeneratorDemo -> $(FgBundleDir)" />
+  </Target>
+
+</Project>
